@@ -19,6 +19,7 @@ environment:
 dependencies:
   json_annotation: ^3.0.1
   path_provider: ^1.6.5
+  share: ^0.6.3
   flutter:
     sdk: flutter
 

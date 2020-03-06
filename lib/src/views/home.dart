@@ -2,14 +2,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:myapp/movie.dart';
-import 'dart:convert';
-import 'dart:io';
-import 'package:path_provider/path_provider.dart' as path_provider;
 
 typedef Future<void> OnTapMovie(Movie m);
 
 class MovieWidget extends StatelessWidget {
-
   // Référence vers la méthode définie en typedef : OnTapMovie
   final OnTapMovie onTap;
 

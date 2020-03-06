@@ -2,10 +2,10 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:myapp/src/mock/movies.dart';
 import 'package:myapp/src/api/api.dart' as rest_api;
 import 'package:myapp/src/views/home.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:share/share.dart';
 
 import 'movie.dart';
 
@@ -140,6 +140,14 @@ class _MyHomePageState extends State<HomeView> {
         // Here we take the value from the HomeView object that was created by
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.share),
+            onPressed: () {
+              Share.share('Hello from ${widget.title}');
+            },
+          )
+        ],
       ),
       body: loading
           ? Center(

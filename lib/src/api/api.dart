@@ -7,9 +7,7 @@ import 'package:myapp/movie.dart';
 const String API_KEY = '4205ec1d93b1e3465f636f0956a98c64';
 const String API = 'https://api.themoviedb.org/3';
 
-/**
- * Appel à MovieDB pour récuperer la liste des films les mieux notés
- */
+/// Appel à MovieDB pour récuperer la liste des films les mieux notés
 Future<MoviesResponse> topRatedMovies() async {
 
   // Path MovieDB
