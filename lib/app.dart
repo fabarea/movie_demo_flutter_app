@@ -1,7 +1,12 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:myapp/src/mock/movies.dart';
 import 'package:myapp/src/api/api.dart' as rest_api;
 import 'package:myapp/src/views/home.dart';
+import 'package:path_provider/path_provider.dart' as path_provider;
+
 
 import 'movie.dart';
 
@@ -48,6 +53,7 @@ class _MyHomePageState extends State<HomeView> {
   final List<int> colorCodes = <int>[600, 500, 100];
 
   List<Movie> movies = [];
+  bool loading = true;
 
   @override
   void initState() {
@@ -64,8 +70,33 @@ class _MyHomePageState extends State<HomeView> {
     MoviesResponse movieResponse = await rest_api.topRatedMovies();
     setState(() {
       movies = movieResponse.movies;
+      _loadFavorites();
     });
   }
+
+  Future<void> _loadFavorites() async {
+    final d = await path_provider.getApplicationDocumentsDirectory();
+    final favoriteFile = File('${d.path}/favorite.db');
+    if (!favoriteFile.existsSync()) {
+      favoriteFile.createSync();
+    }
+
+    Stream<List<int>> inputStream = favoriteFile.openRead();
+
+    final lines = inputStream
+        .transform(utf8.decoder) // Decode bytes to UTF-8.
+        .transform(LineSplitter()); // Convert stream to individual lines.
+
+    await for (final line in lines) {
+      final movie = movies.firstWhere((m) => m.id == int.tryParse(line) ?? -1,
+          orElse: () => null);
+      movie?.favorite = true;
+    }
+    setState(() {
+      loading = false;
+    });
+  }
+
 
 //  void _incrementCounter() {
 //    setState(() {
@@ -77,6 +108,41 @@ class _MyHomePageState extends State<HomeView> {
 //      _counter++;
 //    });
 //  }
+
+  Future<void> _onTapMovie(Movie m) async {
+    for (final movie in movies) {
+      if (movie.id == m.id) {
+        final favoriteState = movie.favorite;
+
+        // Changement d'etat visuel dans l'application sur le setState
+        setState(() {
+          movie.favorite = !movie.favorite;
+        });
+
+        final d = await path_provider.getApplicationDocumentsDirectory();
+        final favoriteFile = File('${d.path}/favorite.db');
+        Stream<List<int>> inputStream = favoriteFile.openRead();
+
+        final lines = inputStream
+            .transform(utf8.decoder) // Decode bytes to UTF-8.
+            .transform(LineSplitter()); // Convert stream to individual lines.
+
+        if (!favoriteState) {
+          favoriteFile.writeAsStringSync('${m.id}\n', mode: FileMode.append);
+        } else {
+          final content =
+          await lines.where((line) => line != '${m.id}').toList();
+          favoriteFile.writeAsStringSync(
+            content.join('\n'),
+            mode: FileMode.write,
+          );
+        }
+
+        break;
+      }
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -101,7 +167,7 @@ class _MyHomePageState extends State<HomeView> {
 //            // color: Colors.amber[colorCodes[index]],
 //            child: Center(child: Text('${movies[index].originalTitle} - ${movies[index].releaseDate}')),
 //          );
-          return MovieWidget(movies[index]);
+          return MovieWidget(movies[index], _onTapMovie);
         },
         separatorBuilder: (BuildContext context, int index) => const Divider(),
       ),

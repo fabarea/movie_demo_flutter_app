@@ -4,14 +4,18 @@ import 'package:flutter/material.dart';
 import 'package:myapp/movie.dart';
 import 'dart:convert';
 import 'dart:io';
-//import 'package:path_provider/path_provider.dart' as path_provider;
+import 'package:path_provider/path_provider.dart' as path_provider;
 
+typedef Future<void> OnTapMovie(Movie m);
 
 class MovieWidget extends StatelessWidget {
 
+  // Référence vers la méthode définie en typedef : OnTapMovie
+  final OnTapMovie onTap;
+
   final Movie movie;
 
-  MovieWidget(this.movie);
+  MovieWidget(this.movie, this.onTap);
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +59,7 @@ class MovieWidget extends StatelessWidget {
                     ),
                     IconButton(
                       onPressed: () {
-                        print(3);
+                        onTap(movie);
                       },
                       icon: Icon(
                         movie.favorite ? Icons.star : Icons.star_border,
