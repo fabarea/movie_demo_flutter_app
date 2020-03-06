@@ -7,12 +7,9 @@ import 'package:myapp/src/api/api.dart' as rest_api;
 import 'package:myapp/src/views/home.dart';
 import 'package:path_provider/path_provider.dart' as path_provider;
 
-
 import 'movie.dart';
 
 class MyApp extends StatelessWidget {
-
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -48,7 +45,6 @@ class HomeView extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<HomeView> {
-
   final List<String> entries = <String>['A', 'B', 'C'];
   final List<int> colorCodes = <int>[600, 500, 100];
 
@@ -97,18 +93,6 @@ class _MyHomePageState extends State<HomeView> {
     });
   }
 
-
-//  void _incrementCounter() {
-//    setState(() {
-//      // This call to setState tells the Flutter framework that something has
-//      // changed in this State, which causes it to rerun the build method below
-//      // so that the display can reflect the updated values. If we changed
-//      // _counter without calling setState(), then the build method would not be
-//      // called again, and so nothing would appear to happen.
-//      _counter++;
-//    });
-//  }
-
   Future<void> _onTapMovie(Movie m) async {
     for (final movie in movies) {
       if (movie.id == m.id) {
@@ -131,7 +115,7 @@ class _MyHomePageState extends State<HomeView> {
           favoriteFile.writeAsStringSync('${m.id}\n', mode: FileMode.append);
         } else {
           final content =
-          await lines.where((line) => line != '${m.id}').toList();
+              await lines.where((line) => line != '${m.id}').toList();
           favoriteFile.writeAsStringSync(
             content.join('\n'),
             mode: FileMode.write,
@@ -142,7 +126,6 @@ class _MyHomePageState extends State<HomeView> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -158,19 +141,21 @@ class _MyHomePageState extends State<HomeView> {
         // the App.build method, and use it to set our appbar title.
         title: Text(widget.title),
       ),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(8.0),
-        itemCount: movies.length,
-        itemBuilder: (BuildContext context, int index) {
-//          return Container(
-//            height: 50,
-//            // color: Colors.amber[colorCodes[index]],
-//            child: Center(child: Text('${movies[index].originalTitle} - ${movies[index].releaseDate}')),
-//          );
-          return MovieWidget(movies[index], _onTapMovie);
-        },
-        separatorBuilder: (BuildContext context, int index) => const Divider(),
-      ),
+      body: loading
+          ? Center(
+              // True means the application is loading, we should display a loading icons
+              child: CircularProgressIndicator(),
+            )
+          : ListView.separated(
+              // True means the application is loading, we should display a loading icons
+              padding: const EdgeInsets.all(8.0),
+              itemCount: movies.length,
+              itemBuilder: (BuildContext context, int index) {
+                return MovieWidget(movies[index], _onTapMovie);
+              },
+              separatorBuilder: (BuildContext context, int index) =>
+                  const Divider(),
+            ),
 //      floatingActionButton: FloatingActionButton(
 //        onPressed: _incrementCounter,
 //        tooltip: 'Increment',
